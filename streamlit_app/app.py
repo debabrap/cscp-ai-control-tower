@@ -3,6 +3,7 @@ import streamlit as st
 
 st.set_page_config(page_title="CSCP AI Control Tower", layout="wide")
 
+
 @st.cache_data
 def load_data():
     demand = pd.read_csv("data/raw/demand_weekly.csv")
@@ -11,79 +12,141 @@ def load_data():
     risk_weekly = pd.read_csv("data/processed/shortage_risk_weekly.csv")
     risk_summary = pd.read_csv("data/processed/shortage_risk_summary.csv")
 
+    # Optional mitigation file (may not exist yet)
+    try:
+        mitigation_plan = pd.read_csv("data/processed/mitigation_plan.csv")
+    except Exception:
+        mitigation_plan = pd.DataFrame()
+
     demand["date"] = pd.to_datetime(demand["date"])
     forecast["date"] = pd.to_datetime(forecast["date"])
     risk_weekly["date"] = pd.to_datetime(risk_weekly["date"])
 
-    return demand, supply, forecast, risk_weekly, risk_summary
+import json
+explanations = {}
+try:
+    with open("data/processed/mitigation_plan_explanations.json", "r") as f:
+        explanations = json.load(f)
+except Exception:
+    explanations = {}
 
-demand, supply, forecast, risk_weekly, risk_summary = load_data()
+return demand, supply, forecast, risk_weekly, risk_summary, mitigation_plan, explanations
 
-st.title("CSCP AI Control Tower — Shortage Risk (Synthetic Demo)")
 
-# --- Top alerts ---
-crit = risk_summary[risk_summary["severity"] == "CRITICAL"].sort_values("risk_score", ascending=False)
-high = risk_summary[risk_summary["severity"] == "HIGH"].sort_values("risk_score", ascending=False)
+# Load data
+demand, supply, forecast, risk_weekly, risk_summary, mitigation_plan, explanations = load_data()
 
-if not crit.empty:
-    top = crit.iloc[0]
+st.title("CSCP AI Control Tower — Hybrid AI Demo")
+
+# ---- Top Alerts ----
+critical = risk_summary[risk_summary["severity"] == "CRITICAL"]
+high = risk_summary[risk_summary["severity"] == "HIGH"]
+
+if not critical.empty:
+    top = critical.sort_values("risk_score", ascending=False).iloc[0]
     st.error(
         f"CRITICAL RISK: {top['region']} / {top['component']} | "
-        f"Risk={top['risk_score']:.1f} | Stockout={top['stockout_date']} | "
-        f"Action: {top['recommended_action']}"
+        f"Risk={top['risk_score']:.1f} | "
+        f"Stockout={top['stockout_date']}"
     )
 elif not high.empty:
-    top = high.iloc[0]
+    top = high.sort_values("risk_score", ascending=False).iloc[0]
     st.warning(
         f"HIGH RISK: {top['region']} / {top['component']} | "
-        f"Risk={top['risk_score']:.1f} | Stockout={top['stockout_date']} | "
-        f"Action: {top['recommended_action']}"
+        f"Risk={top['risk_score']:.1f} | "
+        f"Stockout={top['stockout_date']}"
     )
 else:
-    st.success("No HIGH/CRITICAL shortages detected in the current horizon.")
+    st.success("No HIGH/CRITICAL shortages detected.")
 
 st.divider()
 
-# --- Filters ---
-col1, col2, col3 = st.columns(3)
+# ---- Filters ----
+col1, col2 = st.columns(2)
+
 region = col1.selectbox("Region", sorted(demand["region"].unique()))
 component = col2.selectbox("Component", sorted(demand["component"].unique()))
-history_weeks = col3.slider("History (weeks)", 12, 156, 52)
 
-st.subheader(f"Selected: {region} — {component}")
+st.subheader(f"{region} — {component}")
 
-# --- Demand history ---
-d = demand[(demand["region"] == region) & (demand["component"] == component)].sort_values("date")
-d_tail = d.tail(history_weeks)
+# ---- Demand History ----
+d = demand[
+    (demand["region"] == region) &
+    (demand["component"] == component)
+].sort_values("date")
 
-st.caption("Historical demand (synthetic)")
-st.line_chart(d_tail.set_index("date")["demand_units"], height=260)
+st.caption("Historical Demand")
+st.line_chart(d.set_index("date")["demand_units"], height=250)
 
-# --- Forecast ---
-f = forecast[(forecast["region"] == region) & (forecast["component"] == component)].sort_values("date")
-st.caption("Forecast (next weeks) with confidence bounds")
-st.line_chart(f.set_index("date")[["forecast_units", "lower", "upper"]], height=260)
+# ---- Forecast ----
+f = forecast[
+    (forecast["region"] == region) &
+    (forecast["component"] == component)
+].sort_values("date")
 
-# --- Risk projection ---
-rw = risk_weekly[(risk_weekly["region"] == region) & (risk_weekly["component"] == component)].sort_values("date")
+st.caption("Forecast (Next Weeks)")
+st.line_chart(f.set_index("date")[["forecast_units"]], height=250)
 
-c1, c2 = st.columns(2)
-with c1:
-    st.caption("Projected inventory (units)")
-    st.line_chart(rw.set_index("date")["projected_inventory_units"], height=260)
+# ---- Risk Projection ----
+rw = risk_weekly[
+    (risk_weekly["region"] == region) &
+    (risk_weekly["component"] == component)
+].sort_values("date")
 
-with c2:
-    st.caption("Weeks of cover (WOC)")
-    st.line_chart(rw.set_index("date")["weeks_of_cover"], height=260)
+col1, col2 = st.columns(2)
 
-# --- Risk summary table ---
-st.subheader("Shortage Risk Summary (All Region/Components)")
-order = {"CRITICAL": 0, "HIGH": 1, "MEDIUM": 2, "LOW": 3}
-risk_summary["_sev_rank"] = risk_summary["severity"].map(order).fillna(9).astype(int)
+with col1:
+    st.caption("Projected Inventory")
+    st.line_chart(rw.set_index("date")["projected_inventory_units"], height=250)
 
-st.dataframe(
-    risk_summary.sort_values(["_sev_rank", "risk_score"], ascending=[True, False]).drop(columns=["_sev_rank"]),
-    use_container_width=True
-)
+with col2:
+    st.caption("Weeks of Cover")
+    st.line_chart(rw.set_index("date")["weeks_of_cover"], height=250)
 
-st.caption("Next step: add mitigation options (expedite / rebalance / alternate supplier) as an agentic workflow.")
+st.divider()
+
+# ---- Mitigation Plan ----
+st.subheader("Mitigation Plan")
+# --- Executive Decision Card for selected region/component ---
+sel = None
+if not mitigation_plan.empty:
+    sel_df = mitigation_plan[
+        (mitigation_plan["region"] == region) &
+        (mitigation_plan["component"] == component)
+    ]
+    if not sel_df.empty:
+        sel = sel_df.iloc[0]
+
+if sel is not None:
+    st.error(
+        f"DECISION REQUIRED — {sel['severity']} | {sel['region']} / {sel['component']} | "
+        f"Risk {float(sel['risk_score']):.1f} → {float(sel['risk_after']):.1f} "
+        f"(↓{float(sel['risk_reduction']):.1f}) | "
+        f"Est. Cost ${float(sel['estimated_cost_usd']):,.0f} | "
+        f"Stockout {sel.get('stockout_date', '')}"
+    )
+
+    st.write("**Recommended action:**", sel["recommended_action"])
+
+    # Show top options (stored as JSON strings)
+    import json
+    try:
+        opt1 = json.loads(sel["option_1"])
+        opt2 = json.loads(sel["option_2"])
+        opt3 = json.loads(sel["option_3"])
+
+        st.write("**Evaluated options (ranked):**")
+        st.json({"option_1": opt1, "option_2": opt2, "option_3": opt3})
+    except Exception:
+        st.info("Options detail unavailable (could not parse).")
+else:
+    st.info("No mitigation decision card for the selected region/component.")
+
+if mitigation_plan.empty:
+    st.info("No mitigation required (no HIGH/CRITICAL risks).")
+else:
+    st.dataframe(mitigation_plan, use_container_width=True)
+
+key = f"{region}:{component}"
+if key in explanations:
+    st.info(explanations[key])
