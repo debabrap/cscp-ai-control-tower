@@ -1,0 +1,10 @@
+region,component,starting_inventory_units,total_supply_horizon,total_demand_horizon,pipeline_fill_ratio,min_weeks_of_cover,stockout_date,risk_score,severity,recommended_action
+eastus,GPU,750,0,1686,0.0,-7.488,2027-02-08,100.0,CRITICAL,Expedite + Rebalance + Activate alternate supplier
+northeurope,SWITCH,427,0,1011,0.0,-8.210896309314586,2027-02-08,100.0,CRITICAL,Expedite + Rebalance + Activate alternate supplier
+northeurope,GPU,584,0,1359,0.0,-7.969151670951157,2027-02-08,100.0,CRITICAL,Expedite + Rebalance + Activate alternate supplier
+westus,GPU,838,0,1872,0.0,-7.405550581915846,2027-02-08,100.0,CRITICAL,Expedite + Rebalance + Activate alternate supplier
+westus,NIC,1584,0,3617,0.0,-7.700757575757576,2027-02-08,100.0,CRITICAL,Expedite + Rebalance + Activate alternate supplier
+eastus,NIC,1322,0,2495,0.0,-5.322745320476461,2027-02-15,100.0,CRITICAL,Expedite + Rebalance + Activate alternate supplier
+westus,SWITCH,640,0,1509,0.0,-8.150058616647128,2027-02-08,100.0,CRITICAL,Expedite + Rebalance + Activate alternate supplier
+eastus,SWITCH,520,0,1032,0.0,-5.902017291066282,2027-02-08,100.0,CRITICAL,Expedite + Rebalance + Activate alternate supplier
+northeurope,NIC,1076,0,2287,0.0,-6.751219512195122,2027-02-08,100.0,CRITICAL,Expedite + Rebalance + Activate alternate supplier
