@@ -1,0 +1,10 @@
+incident_id,created_utc,region,component,order_type,quantity,preferred_supplier,status,notes
+INC-4C66E25720,2026-03-03T06:22:42.482844Z,eastus,GPU,PO_DRAFT,337,TBD,DRAFT,Auto-generated draft due to CRITICAL risk. Link to approval/workflow required before submit.
+INC-72E19899BF,2026-03-03T06:22:42.484460Z,northeurope,SWITCH,PO_DRAFT,202,TBD,DRAFT,Auto-generated draft due to CRITICAL risk. Link to approval/workflow required before submit.
+INC-742B82ECC5,2026-03-03T06:22:42.485605Z,northeurope,GPU,PO_DRAFT,272,TBD,DRAFT,Auto-generated draft due to CRITICAL risk. Link to approval/workflow required before submit.
+INC-EB64952C33,2026-03-03T06:22:42.486691Z,westus,GPU,PO_DRAFT,374,TBD,DRAFT,Auto-generated draft due to CRITICAL risk. Link to approval/workflow required before submit.
+INC-83FB7E551D,2026-03-03T06:22:42.487814Z,westus,NIC,PO_DRAFT,723,TBD,DRAFT,Auto-generated draft due to CRITICAL risk. Link to approval/workflow required before submit.
+INC-BD72FA1636,2026-03-03T06:22:42.488913Z,eastus,NIC,PO_DRAFT,499,TBD,DRAFT,Auto-generated draft due to CRITICAL risk. Link to approval/workflow required before submit.
+INC-6CF9DC70E9,2026-03-03T06:22:42.489971Z,westus,SWITCH,PO_DRAFT,302,TBD,DRAFT,Auto-generated draft due to CRITICAL risk. Link to approval/workflow required before submit.
+INC-A6467406FF,2026-03-03T06:22:42.491031Z,eastus,SWITCH,PO_DRAFT,206,TBD,DRAFT,Auto-generated draft due to CRITICAL risk. Link to approval/workflow required before submit.
+INC-8D6C3A1C12,2026-03-03T06:22:42.492062Z,northeurope,NIC,PO_DRAFT,457,TBD,DRAFT,Auto-generated draft due to CRITICAL risk. Link to approval/workflow required before submit.

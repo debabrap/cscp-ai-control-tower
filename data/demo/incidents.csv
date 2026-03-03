@@ -1,0 +1,10 @@
+incident_id,created_utc,region,component,severity,risk_score,stockout_date,status,summary
+INC-4C66E25720,2026-03-03T06:22:42.482844Z,eastus,GPU,CRITICAL,100.0,2027-02-08,OPEN,"CRITICAL shortage risk for eastus/GPU (risk=100.0, stockout=2027-02-08)"
+INC-72E19899BF,2026-03-03T06:22:42.484460Z,northeurope,SWITCH,CRITICAL,100.0,2027-02-08,OPEN,"CRITICAL shortage risk for northeurope/SWITCH (risk=100.0, stockout=2027-02-08)"
+INC-742B82ECC5,2026-03-03T06:22:42.485605Z,northeurope,GPU,CRITICAL,100.0,2027-02-08,OPEN,"CRITICAL shortage risk for northeurope/GPU (risk=100.0, stockout=2027-02-08)"
+INC-EB64952C33,2026-03-03T06:22:42.486691Z,westus,GPU,CRITICAL,100.0,2027-02-08,OPEN,"CRITICAL shortage risk for westus/GPU (risk=100.0, stockout=2027-02-08)"
+INC-83FB7E551D,2026-03-03T06:22:42.487814Z,westus,NIC,CRITICAL,100.0,2027-02-08,OPEN,"CRITICAL shortage risk for westus/NIC (risk=100.0, stockout=2027-02-08)"
+INC-BD72FA1636,2026-03-03T06:22:42.488913Z,eastus,NIC,CRITICAL,100.0,2027-02-15,OPEN,"CRITICAL shortage risk for eastus/NIC (risk=100.0, stockout=2027-02-15)"
+INC-6CF9DC70E9,2026-03-03T06:22:42.489971Z,westus,SWITCH,CRITICAL,100.0,2027-02-08,OPEN,"CRITICAL shortage risk for westus/SWITCH (risk=100.0, stockout=2027-02-08)"
+INC-A6467406FF,2026-03-03T06:22:42.491031Z,eastus,SWITCH,CRITICAL,100.0,2027-02-08,OPEN,"CRITICAL shortage risk for eastus/SWITCH (risk=100.0, stockout=2027-02-08)"
+INC-8D6C3A1C12,2026-03-03T06:22:42.492062Z,northeurope,NIC,CRITICAL,100.0,2027-02-08,OPEN,"CRITICAL shortage risk for northeurope/NIC (risk=100.0, stockout=2027-02-08)"

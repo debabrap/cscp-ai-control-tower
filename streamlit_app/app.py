@@ -12,6 +12,10 @@ def load_data():
     forecast = pd.read_csv("data/demo/forecast_weekly.csv")
     risk_weekly = pd.read_csv("data/demo/shortage_risk_weekly.csv")
     risk_summary = pd.read_csv("data/demo/shortage_risk_summary.csv")
+    incidents = pd.read_csv("data/demo/incidents.csv")
+    actions = pd.read_csv("data/demo/actions.csv")
+    approvals = pd.read_csv("data/demo/approvals.csv")
+    proposed_orders = pd.read_csv("data/demo/proposed_orders.csv")
 
     try:
         mitigation_plan = pd.read_csv("data/demo/mitigation_plan.csv")
@@ -28,11 +32,18 @@ def load_data():
     forecast["date"] = pd.to_datetime(forecast["date"])
     risk_weekly["date"] = pd.to_datetime(risk_weekly["date"])
 
-    return demand, supply, forecast, risk_weekly, risk_summary, mitigation_plan, explanations
+    audit_lines = []
+    try:
+        with open("data/demo/audit_log.jsonl", "r") as f:
+            audit_lines = f.readlines()[-50:]  # last 50 events
+    except Exception:
+        audit_lines = []
+
+    return demand, supply, forecast, risk_weekly, risk_summary, mitigation_plan, explanations, incidents, actions, approvals, proposed_orders, audit_lines
 
 
 # Load all data
-demand, supply, forecast, risk_weekly, risk_summary, mitigation_plan, explanations = load_data()
+demand, supply, forecast, risk_weekly, risk_summary, mitigation_plan, explanations, incidents, actions, approvals, proposed_orders, audit_lines = load_data()
 
 st.title("CSCP AI Control Tower — Hybrid AI Demo")
 
@@ -132,3 +143,25 @@ else:
         key = f"{region}:{component}"
         if key in explanations:
             st.info(explanations[key])
+
+st.divider()
+st.header("Agentic Workflow Outputs (Batch Run)")
+
+tab1, tab2, tab3, tab4 = st.tabs(["Incidents", "Approvals", "Proposed Orders", "Audit Log"])
+
+with tab1:
+    st.subheader("Incident Queue")
+    st.dataframe(incidents, use_container_width=True)
+
+with tab2:
+    st.subheader("Pending Approvals")
+    pending = approvals[approvals["status"] == "PENDING"] if not approvals.empty else approvals
+    st.dataframe(pending, use_container_width=True)
+
+with tab3:
+    st.subheader("Proposed Orders (Draft)")
+    st.dataframe(proposed_orders, use_container_width=True)
+
+with tab4:
+    st.subheader("Audit Log (Last Events)")
+    st.code("".join(audit_lines) if audit_lines else "No audit events loaded.")

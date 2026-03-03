@@ -1,0 +1,10 @@
+approval_id,incident_id,action_id,created_utc,status,approver_role,approval_reason
+APR-F4F83583A1,INC-4C66E25720,ACT-517A1231EF,2026-03-03T06:22:42.482844Z,PENDING,SupplyChainDirector,Policy gate: cost/expedite/supplier-change for eastus/GPU
+APR-8EF8B6C01C,INC-72E19899BF,ACT-B9A0D3D2C2,2026-03-03T06:22:42.484460Z,PENDING,SupplyChainDirector,Policy gate: cost/expedite/supplier-change for northeurope/SWITCH
+APR-1A4048412D,INC-742B82ECC5,ACT-A343929440,2026-03-03T06:22:42.485605Z,PENDING,SupplyChainDirector,Policy gate: cost/expedite/supplier-change for northeurope/GPU
+APR-C84A6C5C66,INC-EB64952C33,ACT-97C1B0A79F,2026-03-03T06:22:42.486691Z,PENDING,SupplyChainDirector,Policy gate: cost/expedite/supplier-change for westus/GPU
+APR-6F39EC7CDB,INC-83FB7E551D,ACT-804D323DBA,2026-03-03T06:22:42.487814Z,PENDING,SupplyChainDirector,Policy gate: cost/expedite/supplier-change for westus/NIC
+APR-131AEDABD9,INC-BD72FA1636,ACT-7EBF4BADDC,2026-03-03T06:22:42.488913Z,PENDING,SupplyChainDirector,Policy gate: cost/expedite/supplier-change for eastus/NIC
+APR-3E95F2C666,INC-6CF9DC70E9,ACT-ECB6FAB36A,2026-03-03T06:22:42.489971Z,PENDING,SupplyChainDirector,Policy gate: cost/expedite/supplier-change for westus/SWITCH
+APR-E430C57B26,INC-A6467406FF,ACT-7297E9F521,2026-03-03T06:22:42.491031Z,PENDING,SupplyChainDirector,Policy gate: cost/expedite/supplier-change for eastus/SWITCH
+APR-7437EC6179,INC-8D6C3A1C12,ACT-B766CD03FC,2026-03-03T06:22:42.492062Z,PENDING,SupplyChainDirector,Policy gate: cost/expedite/supplier-change for northeurope/NIC
