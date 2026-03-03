@@ -13,9 +13,14 @@ def load_data():
     risk_weekly = pd.read_csv("data/demo/shortage_risk_weekly.csv")
     risk_summary = pd.read_csv("data/demo/shortage_risk_summary.csv")
 
-    mitigation_plan = pd.read_csv("data/demo/mitigation_plan.csv")
-    with open("data/demo/mitigation_plan_explanations.json", "r") as f:
-    explanations = json.load(f)
+    try:
+        mitigation_plan = pd.read_csv("data/demo/mitigation_plan.csv")
+    except Exception:
+        mitigation_plan = pd.DataFrame()
+
+    try:
+        with open("data/demo/mitigation_plan_explanations.json", "r") as f:
+            explanations = json.load(f)
     except Exception:
         explanations = {}
 
