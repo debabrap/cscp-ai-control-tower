@@ -1,44 +1,37 @@
 import pandas as pd
 import streamlit as st
+import json
 
 st.set_page_config(page_title="CSCP AI Control Tower", layout="wide")
 
 
 @st.cache_data
 def load_data():
-    demand = pd.read_csv("data/raw/demand_weekly.csv")
-    supply = pd.read_csv("data/raw/supply_weekly.csv")
-    forecast = pd.read_csv("data/processed/forecast_weekly.csv")
-    risk_weekly = pd.read_csv("data/processed/shortage_risk_weekly.csv")
-    risk_summary = pd.read_csv("data/processed/shortage_risk_summary.csv")
+    demand = pd.read_csv("data/demo/demand_weekly.csv")
+    supply = pd.read_csv("data/demo/supply_weekly.csv")
+    forecast = pd.read_csv("data/demo/forecast_weekly.csv")
+    risk_weekly = pd.read_csv("data/demo/shortage_risk_weekly.csv")
+    risk_summary = pd.read_csv("data/demo/shortage_risk_summary.csv")
 
-    # Optional mitigation file (may not exist yet)
-    try:
-        mitigation_plan = pd.read_csv("data/processed/mitigation_plan.csv")
+    mitigation_plan = pd.read_csv("data/demo/mitigation_plan.csv")
+    with open("data/demo/mitigation_plan_explanations.json", "r") as f:
+    explanations = json.load(f)
     except Exception:
-        mitigation_plan = pd.DataFrame()
+        explanations = {}
 
     demand["date"] = pd.to_datetime(demand["date"])
     forecast["date"] = pd.to_datetime(forecast["date"])
     risk_weekly["date"] = pd.to_datetime(risk_weekly["date"])
 
-import json
-explanations = {}
-try:
-    with open("data/processed/mitigation_plan_explanations.json", "r") as f:
-        explanations = json.load(f)
-except Exception:
-    explanations = {}
-
-return demand, supply, forecast, risk_weekly, risk_summary, mitigation_plan, explanations
+    return demand, supply, forecast, risk_weekly, risk_summary, mitigation_plan, explanations
 
 
-# Load data
+# Load all data
 demand, supply, forecast, risk_weekly, risk_summary, mitigation_plan, explanations = load_data()
 
 st.title("CSCP AI Control Tower — Hybrid AI Demo")
 
-# ---- Top Alerts ----
+# ---- Alert Banner ----
 critical = risk_summary[risk_summary["severity"] == "CRITICAL"]
 high = risk_summary[risk_summary["severity"] == "HIGH"]
 
@@ -107,46 +100,30 @@ st.divider()
 
 # ---- Mitigation Plan ----
 st.subheader("Mitigation Plan")
-# --- Executive Decision Card for selected region/component ---
-sel = None
-if not mitigation_plan.empty:
-    sel_df = mitigation_plan[
-        (mitigation_plan["region"] == region) &
-        (mitigation_plan["component"] == component)
-    ]
-    if not sel_df.empty:
-        sel = sel_df.iloc[0]
-
-if sel is not None:
-    st.error(
-        f"DECISION REQUIRED — {sel['severity']} | {sel['region']} / {sel['component']} | "
-        f"Risk {float(sel['risk_score']):.1f} → {float(sel['risk_after']):.1f} "
-        f"(↓{float(sel['risk_reduction']):.1f}) | "
-        f"Est. Cost ${float(sel['estimated_cost_usd']):,.0f} | "
-        f"Stockout {sel.get('stockout_date', '')}"
-    )
-
-    st.write("**Recommended action:**", sel["recommended_action"])
-
-    # Show top options (stored as JSON strings)
-    import json
-    try:
-        opt1 = json.loads(sel["option_1"])
-        opt2 = json.loads(sel["option_2"])
-        opt3 = json.loads(sel["option_3"])
-
-        st.write("**Evaluated options (ranked):**")
-        st.json({"option_1": opt1, "option_2": opt2, "option_3": opt3})
-    except Exception:
-        st.info("Options detail unavailable (could not parse).")
-else:
-    st.info("No mitigation decision card for the selected region/component.")
 
 if mitigation_plan.empty:
-    st.info("No mitigation required (no HIGH/CRITICAL risks).")
+    st.info("No mitigation required.")
 else:
     st.dataframe(mitigation_plan, use_container_width=True)
 
-key = f"{region}:{component}"
-if key in explanations:
-    st.info(explanations[key])
+    # Decision card for selected region/component
+    sel = mitigation_plan[
+        (mitigation_plan["region"] == region) &
+        (mitigation_plan["component"] == component)
+    ]
+
+    if not sel.empty:
+        row = sel.iloc[0]
+
+        st.error(
+            f"DECISION REQUIRED — {row['severity']} | "
+            f"Risk {float(row['risk_score']):.1f} → {float(row['risk_after']):.1f} "
+            f"(↓{float(row['risk_reduction']):.1f}) | "
+            f"Cost ${float(row['estimated_cost_usd']):,.0f}"
+        )
+
+        st.write("**Recommended Action:**", row["recommended_action"])
+
+        key = f"{region}:{component}"
+        if key in explanations:
+            st.info(explanations[key])
